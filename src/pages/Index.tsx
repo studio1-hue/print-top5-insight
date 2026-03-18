@@ -19,6 +19,7 @@ import {
   TrendingUp,
   BarChart3,
   Sparkles,
+  Send,
 } from "lucide-react";
 
 import imgKalendarz from "@/assets/kalendarz.webp";
