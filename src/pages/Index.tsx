@@ -21,11 +21,11 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import imgKalendarz from "@/assets/kalendarz.png";
-import imgReflex from "@/assets/gra-reflex.png";
-import imgMemory from "@/assets/memory.png";
-import imgClipboard from "@/assets/clipboard.png";
-import imgSegregator from "@/assets/segregator.png";
+import imgKalendarz from "@/assets/kalendarz.webp";
+import imgReflex from "@/assets/gra-reflex.webp";
+import imgMemory from "@/assets/memory.webp";
+import imgClipboard from "@/assets/clipboard.webp";
+import imgSegregator from "@/assets/segregator.webp";
 
 const products = [
   {
