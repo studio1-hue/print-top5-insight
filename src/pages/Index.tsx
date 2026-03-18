@@ -19,6 +19,7 @@ import {
   TrendingUp,
   BarChart3,
   Sparkles,
+  Send,
 } from "lucide-react";
 
 import imgKalendarz from "@/assets/kalendarz.webp";
@@ -208,11 +209,13 @@ const ExperiencePanel = ({
   selection,
   onExperience,
   onSupplier,
+  onContact,
 }: {
   product: (typeof products)[0];
   selection: ProductSelection;
   onExperience: (exp: Experience) => void;
   onSupplier: (s: string) => void;
+  onContact: () => void;
 }) => (
   <motion.div
     initial={{ opacity: 0, height: 0 }}
@@ -260,6 +263,20 @@ const ExperiencePanel = ({
           </Label>
         </div>
       </RadioGroup>
+
+      {/* Contact button after selection */}
+      {selection.experience && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-4 flex justify-center"
+        >
+          <Button onClick={onContact} className="gap-2">
+            <Send className="h-4 w-4" />
+            Skontaktuj się z nami
+          </Button>
+        </motion.div>
+      )}
     </div>
   </motion.div>
 );
@@ -469,6 +486,7 @@ const Index = () => {
                   selection={selections[product.id]}
                   onExperience={(exp) => setExperience(product.id, exp)}
                   onSupplier={(s) => setSupplier(product.id, s)}
+                  onContact={() => setContactOpen(true)}
                 />
               );
             })}
