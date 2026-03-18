@@ -9,11 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
-  Calendar,
-  Gamepad2,
-  Puzzle,
-  ClipboardList,
-  BookOpen,
   CheckCircle2,
   Mail,
   Phone,
@@ -21,10 +16,15 @@ import {
   Video,
   Gift,
   ArrowRight,
-  Star,
   TrendingUp,
   BarChart3,
 } from "lucide-react";
+
+import imgKalendarz from "@/assets/kalendarz.png";
+import imgReflex from "@/assets/gra-reflex.png";
+import imgMemory from "@/assets/memory.png";
+import imgClipboard from "@/assets/clipboard.png";
+import imgSegregator from "@/assets/segregator.png";
 
 const products = [
   {
