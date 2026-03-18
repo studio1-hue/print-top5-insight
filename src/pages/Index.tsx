@@ -223,7 +223,7 @@ const ExperiencePanel = ({
     <div className={`mx-auto max-w-lg rounded-2xl border-2 border-primary/20 bg-card p-5 shadow-lg mt-4 bg-gradient-to-br ${product.color}`}>
       <div className="flex items-center gap-3 mb-4">
         <div className="h-12 w-12 rounded-xl bg-card/80 p-1.5 flex items-center justify-center shadow-sm">
-          <img src={product.image} alt={product.name} className="h-full w-full object-contain" />
+          <img src={product.image} alt={product.name} className="h-full w-full object-contain mix-blend-multiply" />
         </div>
         <div>
           <p className="font-bold text-foreground">{product.name}</p>
