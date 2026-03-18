@@ -23,9 +23,9 @@ import {
 
 import imgKalendarz from "@/assets/kalendarz.webp";
 import imgReflex from "@/assets/gra-reflex.webp";
-import imgMemory from "@/assets/memory.png";
-import imgClipboard from "@/assets/clipboard.png";
-import imgSegregator from "@/assets/segregator.png";
+import imgMemory from "@/assets/memory.webp";
+import imgClipboard from "@/assets/clipboard.webp";
+import imgSegregator from "@/assets/segregator.webp";
 
 const products = [
   {
@@ -176,7 +176,7 @@ function TiltCard({
           <motion.img
             src={product.image}
             alt={product.name}
-            className="h-32 w-32 md:h-36 md:w-36 object-contain drop-shadow-lg"
+            className="h-32 w-32 md:h-36 md:w-36 object-contain drop-shadow-lg mix-blend-multiply"
             whileHover={{ scale: 1.1 }}
             transition={{ type: "spring", stiffness: 400 }}
           />
@@ -223,7 +223,7 @@ const ExperiencePanel = ({
     <div className={`mx-auto max-w-lg rounded-2xl border-2 border-primary/20 bg-card p-5 shadow-lg mt-4 bg-gradient-to-br ${product.color}`}>
       <div className="flex items-center gap-3 mb-4">
         <div className="h-12 w-12 rounded-xl bg-card/80 p-1.5 flex items-center justify-center shadow-sm">
-          <img src={product.image} alt={product.name} className="h-full w-full object-contain" />
+          <img src={product.image} alt={product.name} className="h-full w-full object-contain mix-blend-multiply" />
         </div>
         <div>
           <p className="font-bold text-foreground">{product.name}</p>
