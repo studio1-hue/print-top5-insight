@@ -594,9 +594,28 @@ const Index = () => {
               {contactType === "handlowiec" ? "Kontakt z handlowcem" : "Umów video spotkanie"}
             </DialogTitle>
             <DialogDescription>
-              Wybrane produkty: {selectedProducts.map((id) => products.find((p) => p.id === id)?.name).join(", ")}
+              Wybrane produkty i preferencje:
             </DialogDescription>
           </DialogHeader>
+
+          {/* Summary of selections */}
+          <div className="space-y-2 rounded-xl border border-border bg-muted/50 p-4 text-sm">
+            {selectedProducts.map((id) => {
+              const product = products.find((p) => p.id === id);
+              const sel = selections[id];
+              if (!product || !sel) return null;
+              return (
+                <div key={id} className="flex flex-col gap-0.5">
+                  <span className="font-semibold text-foreground">{product.name}</span>
+                  <span className="text-muted-foreground">
+                    {sel.experience === "mam-dostawce"
+                      ? `Mam dostawcę${sel.currentSupplier ? ` — ${sel.currentSupplier}` : ""}`
+                      : "Jeszcze nie kupuję — chcę wdrożyć"}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
 
           <form onSubmit={handleContactSubmit} className="space-y-4">
             <div className="space-y-2">
