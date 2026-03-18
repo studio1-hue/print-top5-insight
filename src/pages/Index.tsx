@@ -9,11 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
-  Calendar,
-  Gamepad2,
-  Puzzle,
-  ClipboardList,
-  BookOpen,
   CheckCircle2,
   Mail,
   Phone,
@@ -21,56 +16,56 @@ import {
   Video,
   Gift,
   ArrowRight,
-  Star,
   TrendingUp,
   BarChart3,
 } from "lucide-react";
+
+import imgKalendarz from "@/assets/kalendarz.png";
+import imgReflex from "@/assets/gra-reflex.png";
+import imgMemory from "@/assets/memory.png";
+import imgClipboard from "@/assets/clipboard.png";
+import imgSegregator from "@/assets/segregator.png";
 
 const products = [
   {
     id: "kalendarz",
     name: "Kalendarz trójdzielny LUX wypukły",
     badge: "Oferta od 1 maja",
-    icon: Calendar,
+    image: imgKalendarz,
     description: "Bestseller wśród produktów reklamowych. Elegancki kalendarz z wypukłym tłoczeniem, idealny jako upominek firmowy.",
     rank: 1,
-    share: "18%",
   },
   {
     id: "gra-reflex",
     name: "Gra Re-Flex",
     badge: null,
-    icon: Gamepad2,
+    image: imgReflex,
     description: "Dynamiczna gra zręcznościowa z brandingiem klienta. Świetny gadżet angażujący odbiorców na eventach i w kampaniach.",
     rank: 2,
-    share: "14%",
   },
   {
     id: "memory",
     name: "Memory w pudełku",
     badge: null,
-    icon: Puzzle,
+    image: imgMemory,
     description: "Klasyczna gra memory w eleganckim, brandowanym pudełku. Idealna na prezenty i działania edukacyjne.",
     rank: 3,
-    share: "11%",
   },
   {
     id: "clipboard",
     name: "Clipboardy A4",
     badge: null,
-    icon: ClipboardList,
+    image: imgClipboard,
     description: "Funkcjonalny clipboard w formacie A4 z pełnym brandingiem. Doskonały do codziennego użytku w biurze.",
     rank: 4,
-    share: "9%",
   },
   {
     id: "segregator",
     name: "Segregatory A4",
     badge: null,
-    icon: BookOpen,
+    image: imgSegregator,
     description: "Personalizowane segregatory A4 z nadrukiem. Trwałe i praktyczne — widoczność marki każdego dnia.",
     rank: 5,
-    share: "8%",
   },
 ];
 
@@ -227,12 +222,11 @@ const Index = () => {
         <div className="space-y-6">
           {products.map((product) => {
             const selected = !!selections[product.id];
-            const Icon = product.icon;
 
             return (
               <Card
                 key={product.id}
-                className={`transition-all duration-200 cursor-pointer ${
+                className={`transition-all duration-200 cursor-pointer overflow-hidden ${
                   selected
                     ? "ring-2 ring-primary shadow-lg"
                     : "hover:shadow-md hover:border-primary/30"
@@ -240,11 +234,20 @@ const Index = () => {
               >
                 <div onClick={() => toggleProduct(product.id)}>
                   <CardHeader className="pb-3">
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                        <span className="text-xl font-black text-primary">#{product.rank}</span>
+                    <div className="flex items-center gap-5">
+                      <div className="relative shrink-0">
+                        <div className="absolute -top-1 -left-1 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-black text-primary-foreground shadow-md z-10">
+                          {product.rank}
+                        </div>
+                        <div className="h-24 w-24 rounded-xl bg-muted/50 p-2 flex items-center justify-center overflow-hidden">
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="h-full w-full object-contain"
+                          />
+                        </div>
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <CardTitle className="text-xl">{product.name}</CardTitle>
                           {product.badge && (
@@ -254,10 +257,6 @@ const Index = () => {
                           )}
                         </div>
                         <p className="mt-1 text-sm text-muted-foreground">{product.description}</p>
-                      </div>
-                      <div className="flex flex-col items-end gap-1">
-                        <div className="text-2xl font-bold text-primary">{product.share}</div>
-                        <span className="text-xs text-muted-foreground">udział w sprzedaży</span>
                       </div>
                       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
                         selected ? "border-primary bg-primary" : "border-border"
