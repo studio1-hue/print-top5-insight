@@ -23,9 +23,9 @@ import {
 
 import imgKalendarz from "@/assets/kalendarz.webp";
 import imgReflex from "@/assets/gra-reflex.webp";
-import imgMemory from "@/assets/memory.webp";
-import imgClipboard from "@/assets/clipboard.webp";
-import imgSegregator from "@/assets/segregator.webp";
+import imgMemory from "@/assets/memory.png";
+import imgClipboard from "@/assets/clipboard.png";
+import imgSegregator from "@/assets/segregator.png";
 
 const products = [
   {
