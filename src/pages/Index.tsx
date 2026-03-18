@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef } from "react";
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,8 +18,7 @@ import {
   ArrowRight,
   TrendingUp,
   BarChart3,
-  Trophy,
-  Crown,
+  Sparkles,
 } from "lucide-react";
 
 import imgKalendarz from "@/assets/kalendarz.png";
@@ -36,6 +35,8 @@ const products = [
     image: imgKalendarz,
     description: "Bestseller wśród produktów reklamowych. Elegancki kalendarz z wypukłym tłoczeniem, idealny jako upominek firmowy.",
     rank: 1,
+    color: "from-amber-500/20 to-orange-500/10",
+    glow: "shadow-amber-500/20",
   },
   {
     id: "gra-reflex",
@@ -44,6 +45,8 @@ const products = [
     image: imgReflex,
     description: "Dynamiczna gra zręcznościowa z brandingiem klienta. Świetny gadżet angażujący odbiorców na eventach i w kampaniach.",
     rank: 2,
+    color: "from-violet-500/20 to-purple-500/10",
+    glow: "shadow-violet-500/20",
   },
   {
     id: "memory",
@@ -52,6 +55,8 @@ const products = [
     image: imgMemory,
     description: "Klasyczna gra memory w eleganckim, brandowanym pudełku. Idealna na prezenty i działania edukacyjne.",
     rank: 3,
+    color: "from-rose-500/20 to-pink-500/10",
+    glow: "shadow-rose-500/20",
   },
   {
     id: "clipboard",
@@ -60,6 +65,8 @@ const products = [
     image: imgClipboard,
     description: "Funkcjonalny clipboard w formacie A4 z pełnym brandingiem. Doskonały do codziennego użytku w biurze.",
     rank: 4,
+    color: "from-emerald-500/20 to-green-500/10",
+    glow: "shadow-emerald-500/20",
   },
   {
     id: "segregator",
@@ -68,17 +75,14 @@ const products = [
     image: imgSegregator,
     description: "Personalizowane segregatory A4 z nadrukiem. Trwałe i praktyczne — widoczność marki każdego dnia.",
     rank: 5,
+    color: "from-sky-500/20 to-blue-500/10",
+    glow: "shadow-sky-500/20",
   },
 ];
 
-// Podium order: 2nd, 1st, 3rd
-const podiumOrder = [1, 0, 2]; // indices into products array
-const podiumHeights = ["h-44", "h-56", "h-36"]; // bar heights for 2nd, 1st, 3rd
-const podiumColors = [
-  "from-muted-foreground/20 to-muted-foreground/10", // silver
-  "from-accent to-accent/60", // gold
-  "from-primary/20 to-primary/10", // bronze
-];
+// Fan angles for 5 cards
+const fanAngles = [-12, -6, 0, 6, 12];
+const fanOffsetY = [20, 8, 0, 8, 20];
 
 type Experience = "mam-dostawce" | "nie-kupuje";
 
@@ -88,117 +92,116 @@ interface ProductSelection {
   currentSupplier?: string;
 }
 
-const PodiumProduct = ({
+function TiltCard({
   product,
-  height,
-  gradient,
   selected,
   onToggle,
-  delay,
+  fanAngle,
+  offsetY,
+  index,
 }: {
-  product: typeof products[0];
-  height: string;
-  gradient: string;
+  product: (typeof products)[0];
   selected: boolean;
   onToggle: () => void;
-  delay: number;
-}) => (
-  <motion.div
-    initial={{ opacity: 0, y: 60 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6, delay }}
-    className="flex flex-col items-center"
-  >
-    {/* Product image floating above the podium */}
+  fanAngle: number;
+  offsetY: number;
+  index: number;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const rotateX = useTransform(y, [-150, 150], [15, -15]);
+  const rotateY = useTransform(x, [-150, 150], [-15, 15]);
+
+  const springRotateX = useSpring(rotateX, { stiffness: 300, damping: 30 });
+  const springRotateY = useSpring(rotateY, { stiffness: 300, damping: 30 });
+
+  const handleMouse = (e: React.MouseEvent) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    x.set(e.clientX - rect.left - rect.width / 2);
+    y.set(e.clientY - rect.top - rect.height / 2);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
     <motion.div
-      whileHover={{ scale: 1.05, y: -8 }}
-      whileTap={{ scale: 0.97 }}
-      onClick={onToggle}
-      className={`relative cursor-pointer mb-3 group`}
+      initial={{ opacity: 0, y: 80, rotate: 0 }}
+      whileInView={{ opacity: 1, y: offsetY, rotate: fanAngle }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.7, delay: index * 0.1, type: "spring", bounce: 0.3 }}
+      whileHover={{ y: offsetY - 30, rotate: 0, scale: 1.08, zIndex: 50 }}
+      className="relative"
+      style={{ perspective: 800 }}
     >
-      {product.rank === 1 && (
-        <motion.div
-          animate={{ y: [0, -4, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="absolute -top-5 left-1/2 -translate-x-1/2 z-20"
-        >
-          <Crown className="h-8 w-8 text-accent fill-accent" />
-        </motion.div>
-      )}
-      <div className={`relative rounded-2xl bg-card border-2 shadow-lg p-4 transition-all duration-300 ${
-        selected
-          ? "border-primary shadow-primary/20 shadow-xl ring-2 ring-primary/30"
-          : "border-border group-hover:border-primary/40 group-hover:shadow-xl"
-      }`}>
-        <div className={`absolute -top-3 -right-3 flex h-8 w-8 items-center justify-center rounded-full text-xs font-black shadow-md z-10 transition-all ${
-          selected ? "bg-primary text-primary-foreground scale-110" : "bg-muted text-muted-foreground"
+      <motion.div
+        ref={cardRef}
+        onMouseMove={handleMouse}
+        onMouseLeave={handleMouseLeave}
+        onClick={onToggle}
+        style={{ rotateX: springRotateX, rotateY: springRotateY }}
+        className={`
+          relative cursor-pointer w-[220px] md:w-[240px] rounded-3xl border-2 bg-card
+          p-5 transition-shadow duration-300 select-none
+          ${selected
+            ? `border-primary shadow-2xl ${product.glow} ring-2 ring-primary/30`
+            : `border-border/60 shadow-xl hover:shadow-2xl ${product.glow}`
+          }
+        `}
+      >
+        {/* Gradient background */}
+        <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${product.color} opacity-60`} />
+
+        {/* Rank badge */}
+        <div className={`absolute -top-3 -left-3 flex h-10 w-10 items-center justify-center rounded-2xl text-sm font-black shadow-lg z-10 transition-all ${
+          selected ? "bg-primary text-primary-foreground scale-110" : "bg-card text-foreground border border-border"
         }`}>
           {selected ? <CheckCircle2 className="h-5 w-5" /> : `#${product.rank}`}
         </div>
-        <img
-          src={product.image}
-          alt={product.name}
-          className={`object-contain transition-all duration-300 ${
-            product.rank === 1 ? "h-32 w-32 md:h-40 md:w-40" : "h-24 w-24 md:h-32 md:w-32"
-          }`}
-        />
-      </div>
-      {product.badge && (
-        <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[10px] font-bold whitespace-nowrap shadow-md">
-          {product.badge}
-        </Badge>
-      )}
+
+        {/* Product badge */}
+        {product.badge && (
+          <Badge className="absolute -top-2 right-3 bg-accent text-accent-foreground text-[10px] font-bold shadow-md z-10">
+            {product.badge}
+          </Badge>
+        )}
+
+        {/* Image */}
+        <div className="relative z-[1] flex justify-center pt-2 pb-4">
+          <motion.img
+            src={product.image}
+            alt={product.name}
+            className="h-32 w-32 md:h-36 md:w-36 object-contain drop-shadow-lg"
+            whileHover={{ scale: 1.1 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          />
+        </div>
+
+        {/* Text */}
+        <div className="relative z-[1]">
+          <p className="font-bold text-foreground text-sm leading-tight text-center">{product.name}</p>
+          <p className="text-xs text-muted-foreground mt-2 text-center line-clamp-2">{product.description}</p>
+        </div>
+
+        {/* Selection indicator */}
+        <div className={`relative z-[1] mt-4 flex justify-center`}>
+          <div className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+            selected
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground"
+          }`}>
+            {selected ? "✓ Wybrano" : "Kliknij aby wybrać"}
+          </div>
+        </div>
+      </motion.div>
     </motion.div>
-
-    {/* Podium bar */}
-    <div className={`w-full max-w-[160px] md:max-w-[200px] ${height} rounded-t-xl bg-gradient-to-t ${gradient} flex flex-col items-center justify-start pt-4 px-2 relative`}>
-      <span className="text-xs md:text-sm font-bold text-foreground text-center leading-tight">
-        {product.name}
-      </span>
-    </div>
-  </motion.div>
-);
-
-const BottomProduct = ({
-  product,
-  selected,
-  onToggle,
-  delay,
-}: {
-  product: typeof products[0];
-  selected: boolean;
-  onToggle: () => void;
-  delay: number;
-}) => (
-  <motion.div
-    initial={{ opacity: 0, y: 40 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.5, delay }}
-    whileHover={{ scale: 1.03 }}
-    whileTap={{ scale: 0.98 }}
-    onClick={onToggle}
-    className={`cursor-pointer rounded-2xl border-2 bg-card p-5 flex items-center gap-5 transition-all duration-300 ${
-      selected
-        ? "border-primary shadow-xl shadow-primary/10 ring-2 ring-primary/20"
-        : "border-border hover:border-primary/30 hover:shadow-lg"
-    }`}
-  >
-    <div className={`relative shrink-0 flex h-8 w-8 items-center justify-center rounded-full text-xs font-black ${
-      selected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-    }`}>
-      {selected ? <CheckCircle2 className="h-5 w-5" /> : `#${product.rank}`}
-    </div>
-    <div className="h-20 w-20 shrink-0 rounded-xl bg-muted/50 p-2 flex items-center justify-center">
-      <img src={product.image} alt={product.name} className="h-full w-full object-contain" />
-    </div>
-    <div className="flex-1 min-w-0">
-      <p className="font-bold text-foreground">{product.name}</p>
-      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{product.description}</p>
-    </div>
-  </motion.div>
-);
+  );
+}
 
 const ExperiencePanel = ({
   product,
@@ -206,7 +209,7 @@ const ExperiencePanel = ({
   onExperience,
   onSupplier,
 }: {
-  product: typeof products[0];
+  product: (typeof products)[0];
   selection: ProductSelection;
   onExperience: (exp: Experience) => void;
   onSupplier: (s: string) => void;
@@ -217,9 +220,9 @@ const ExperiencePanel = ({
     exit={{ opacity: 0, height: 0 }}
     className="overflow-hidden"
   >
-    <div className="mx-auto max-w-2xl rounded-2xl border-2 border-primary/20 bg-card p-5 shadow-lg mt-4">
+    <div className={`mx-auto max-w-lg rounded-2xl border-2 border-primary/20 bg-card p-5 shadow-lg mt-4 bg-gradient-to-br ${product.color}`}>
       <div className="flex items-center gap-3 mb-4">
-        <div className="h-10 w-10 rounded-lg bg-muted/50 p-1 flex items-center justify-center">
+        <div className="h-12 w-12 rounded-xl bg-card/80 p-1.5 flex items-center justify-center shadow-sm">
           <img src={product.image} alt={product.name} className="h-full w-full object-contain" />
         </div>
         <div>
@@ -232,7 +235,7 @@ const ExperiencePanel = ({
         onValueChange={(val) => onExperience(val as Experience)}
         className="space-y-3"
       >
-        <div className="flex items-start gap-3 rounded-xl border border-border p-3 hover:bg-muted/50 transition-colors">
+        <div className="flex items-start gap-3 rounded-xl border border-border bg-card/80 p-3 hover:bg-card transition-colors">
           <RadioGroupItem value="mam-dostawce" id={`${product.id}-a`} className="mt-0.5" />
           <div>
             <Label htmlFor={`${product.id}-a`} className="cursor-pointer font-medium">
@@ -244,13 +247,13 @@ const ExperiencePanel = ({
                   placeholder="Obecny dostawca (nieobowiązkowo)"
                   value={selection.currentSupplier || ""}
                   onChange={(e) => onSupplier(e.target.value)}
-                  className="max-w-xs"
+                  className="max-w-xs bg-card"
                 />
               </div>
             )}
           </div>
         </div>
-        <div className="flex items-start gap-3 rounded-xl border border-border p-3 hover:bg-muted/50 transition-colors">
+        <div className="flex items-start gap-3 rounded-xl border border-border bg-card/80 p-3 hover:bg-card transition-colors">
           <RadioGroupItem value="nie-kupuje" id={`${product.id}-b`} className="mt-0.5" />
           <Label htmlFor={`${product.id}-b`} className="cursor-pointer font-medium">
             Jeszcze nie kupuję, ale chętnie wdrożę
@@ -391,7 +394,7 @@ const Index = () => {
               className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20"
               onClick={() => document.getElementById("products")?.scrollIntoView({ behavior: "smooth" })}
             >
-              <Trophy className="mr-2 h-5 w-5" /> Zobacz podium TOP 5 <ArrowRight className="ml-2 h-4 w-4" />
+              <Sparkles className="mr-2 h-5 w-5" /> Odkryj TOP 5 <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </motion.div>
         </div>
@@ -420,125 +423,95 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Products - Podium */}
-      <section id="products" className="mx-auto max-w-6xl px-4 py-20">
-        <div className="mb-16 text-center">
+      {/* Products - 3D Cards Fan */}
+      <section id="products" className="py-20 overflow-hidden">
+        <div className="mb-16 text-center px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
             <h2 className="text-3xl font-bold text-foreground md:text-4xl">
-              <Trophy className="inline-block mr-3 h-8 w-8 text-accent" />
-              Podium TOP 5
+              Odkryj TOP 5 produktów
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Kliknij produkt, aby go wybrać i opisz swoje doświadczenie
+              Najedź na kartę, aby ją obejrzeć • Kliknij, aby wybrać
             </p>
           </motion.div>
         </div>
 
-        {/* Podium - Top 3 */}
-        <div className="flex items-end justify-center gap-3 md:gap-6 mb-8">
-          {podiumOrder.map((productIndex, i) => {
-            const product = products[productIndex];
-            return (
-              <PodiumProduct
+        {/* Fan of cards */}
+        <div className="flex items-center justify-center gap-[-20px] pb-16 pt-8 px-4">
+          <div className="flex items-end justify-center" style={{ gap: "-10px" }}>
+            {products.map((product, i) => (
+              <TiltCard
                 key={product.id}
                 product={product}
-                height={podiumHeights[i]}
-                gradient={podiumColors[i]}
                 selected={!!selections[product.id]}
                 onToggle={() => toggleProduct(product.id)}
-                delay={i === 1 ? 0 : i === 0 ? 0.2 : 0.4}
+                fanAngle={fanAngles[i]}
+                offsetY={fanOffsetY[i]}
+                index={i}
               />
-            );
-          })}
+            ))}
+          </div>
         </div>
 
-        {/* Experience panels for top 3 */}
-        <AnimatePresence>
-          {podiumOrder.map((productIndex) => {
-            const product = products[productIndex];
-            if (!selections[product.id]) return null;
-            return (
-              <ExperiencePanel
-                key={product.id}
-                product={product}
-                selection={selections[product.id]}
-                onExperience={(exp) => setExperience(product.id, exp)}
-                onSupplier={(s) => setSupplier(product.id, s)}
-              />
-            );
-          })}
-        </AnimatePresence>
+        {/* Experience panels */}
+        <div className="max-w-6xl mx-auto px-4">
+          <AnimatePresence>
+            {products.map((product) => {
+              if (!selections[product.id]) return null;
+              return (
+                <ExperiencePanel
+                  key={product.id}
+                  product={product}
+                  selection={selections[product.id]}
+                  onExperience={(exp) => setExperience(product.id, exp)}
+                  onSupplier={(s) => setSupplier(product.id, s)}
+                />
+              );
+            })}
+          </AnimatePresence>
 
-        {/* Bottom 2 - positions 4 & 5 */}
-        <div className="mt-12 grid gap-4 md:grid-cols-2 max-w-3xl mx-auto">
-          {[products[3], products[4]].map((product, i) => (
-            <BottomProduct
-              key={product.id}
-              product={product}
-              selected={!!selections[product.id]}
-              onToggle={() => toggleProduct(product.id)}
-              delay={0.1 * i}
-            />
-          ))}
+          {/* CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-16 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
+          >
+            <Button
+              size="lg"
+              onClick={() => {
+                if (selectedProducts.length === 0) {
+                  toast.error("Wybierz przynajmniej jeden produkt");
+                  return;
+                }
+                setContactType("handlowiec");
+                setContactOpen(true);
+              }}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto shadow-lg shadow-primary/20"
+            >
+              <Phone className="mr-2 h-4 w-4" /> Poproś o kontakt handlowca
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => {
+                if (selectedProducts.length === 0) {
+                  toast.error("Wybierz przynajmniej jeden produkt");
+                  return;
+                }
+                setContactType("video");
+                setContactOpen(true);
+              }}
+              className="w-full sm:w-auto"
+            >
+              <Video className="mr-2 h-4 w-4" /> Umów video spotkanie
+            </Button>
+          </motion.div>
         </div>
-
-        {/* Experience panels for bottom 2 */}
-        <AnimatePresence>
-          {[products[3], products[4]].map((product) => {
-            if (!selections[product.id]) return null;
-            return (
-              <ExperiencePanel
-                key={product.id}
-                product={product}
-                selection={selections[product.id]}
-                onExperience={(exp) => setExperience(product.id, exp)}
-                onSupplier={(s) => setSupplier(product.id, s)}
-              />
-            );
-          })}
-        </AnimatePresence>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-16 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-        >
-          <Button
-            size="lg"
-            onClick={() => {
-              if (selectedProducts.length === 0) {
-                toast.error("Wybierz przynajmniej jeden produkt");
-                return;
-              }
-              setContactType("handlowiec");
-              setContactOpen(true);
-            }}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto shadow-lg shadow-primary/20"
-          >
-            <Phone className="mr-2 h-4 w-4" /> Poproś o kontakt handlowca
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            onClick={() => {
-              if (selectedProducts.length === 0) {
-                toast.error("Wybierz przynajmniej jeden produkt");
-                return;
-              }
-              setContactType("video");
-              setContactOpen(true);
-            }}
-            className="w-full sm:w-auto"
-          >
-            <Video className="mr-2 h-4 w-4" /> Umów video spotkanie
-          </Button>
-        </motion.div>
       </section>
 
       {/* Coupon */}
