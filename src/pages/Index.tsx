@@ -487,6 +487,7 @@ const Index = () => {
                   onExperience={(exp) => setExperience(product.id, exp)}
                   onSupplier={(s) => setSupplier(product.id, s)}
                   onContact={() => setContactOpen(true)}
+                />
               );
             })}
           </AnimatePresence>
