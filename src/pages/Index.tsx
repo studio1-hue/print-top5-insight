@@ -327,6 +327,29 @@ const Index = () => {
       toast.error("Wybierz przynajmniej jeden produkt");
       return;
     }
+
+    // Build product summary for email
+    const productSummary = selectedProducts
+      .map((id) => {
+        const product = products.find((p) => p.id === id);
+        const sel = selections[id];
+        if (!product || !sel) return "";
+        const exp =
+          sel.experience === "mam-dostawce"
+            ? `Mam dostawcę${sel.currentSupplier ? ` (${sel.currentSupplier})` : ""}`
+            : "Jeszcze nie kupuję — chcę wdrożyć";
+        return `• ${product.name}: ${exp}`;
+      })
+      .filter(Boolean)
+      .join("\n");
+
+    const subject = encodeURIComponent(`Nowe zgłoszenie PrintPartner — ${contactForm.name}`);
+    const body = encodeURIComponent(
+      `Imię i nazwisko: ${contactForm.name}\nE-mail: ${contactForm.email}\nTelefon: ${contactForm.phone || "—"}\n\nWybrane produkty:\n${productSummary}\n\nForma kontaktu: ${contactType === "handlowiec" ? "Kontakt z handlowcem" : "Video spotkanie"}\n\nWiadomość:\n${contactForm.message || "—"}`
+    );
+
+    window.open(`mailto:andrzej@drukpolska.pl?subject=${subject}&body=${body}`, "_blank");
+
     toast.success(
       contactType === "handlowiec"
         ? "Dziękujemy! Handlowiec skontaktuje się z Tobą wkrótce."
