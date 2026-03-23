@@ -174,11 +174,12 @@ function TiltCard({
         )}
 
         {/* Image */}
-        <div className="relative z-[1] flex justify-center pt-2 pb-4">
+        <div className={`relative z-[1] flex justify-center pt-2 pb-4 rounded-2xl bg-gradient-to-br ${product.color}`}>
           <motion.img
             src={product.image}
             alt={product.name}
             className="h-32 w-32 md:h-36 md:w-36 object-contain drop-shadow-lg mix-blend-multiply"
+            style={{ filter: "contrast(1.05)" }}
             whileHover={{ scale: 1.1 }}
             transition={{ type: "spring", stiffness: 400 }}
           />
