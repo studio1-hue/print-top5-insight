@@ -391,6 +391,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* SVG sharpen filter */}
+      <svg className="absolute w-0 h-0" aria-hidden="true">
+        <defs>
+          <filter id="sharpen">
+            <feConvolveMatrix order="3" kernelMatrix="0 -0.5 0 -0.5 3 -0.5 0 -0.5 0" preserveAlpha="true" />
+          </filter>
+        </defs>
+      </svg>
       {/* Header */}
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
