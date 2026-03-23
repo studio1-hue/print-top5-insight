@@ -179,7 +179,7 @@ function TiltCard({
             src={product.image}
             alt={product.name}
             className="h-32 w-32 md:h-36 md:w-36 object-contain drop-shadow-lg mix-blend-multiply"
-            style={{ filter: "contrast(1.05)" }}
+            style={{ filter: "contrast(1.08) saturate(1.1) brightness(1.02) url(#sharpen)" }}
             whileHover={{ scale: 1.1 }}
             transition={{ type: "spring", stiffness: 400 }}
           />
@@ -391,6 +391,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* SVG sharpen filter */}
+      <svg className="absolute w-0 h-0" aria-hidden="true">
+        <defs>
+          <filter id="sharpen">
+            <feConvolveMatrix order="3" kernelMatrix="0 -0.5 0 -0.5 3 -0.5 0 -0.5 0" preserveAlpha="true" />
+          </filter>
+        </defs>
+      </svg>
       {/* Header */}
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
