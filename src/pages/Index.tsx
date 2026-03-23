@@ -179,7 +179,7 @@ function TiltCard({
             src={product.image}
             alt={product.name}
             className="h-32 w-32 md:h-36 md:w-36 object-contain drop-shadow-lg mix-blend-multiply"
-            style={{ filter: "contrast(1.05)" }}
+            style={{ filter: "contrast(1.08) saturate(1.1) brightness(1.02)", imageRendering: "auto" }}
             whileHover={{ scale: 1.1 }}
             transition={{ type: "spring", stiffness: 400 }}
           />
