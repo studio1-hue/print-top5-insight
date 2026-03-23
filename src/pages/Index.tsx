@@ -343,26 +343,21 @@ const Index = () => {
       .filter(Boolean)
       .join("\n");
 
-    const idempotencyKey = `lead-${Date.now()}-${contactForm.email}`;
-
     try {
-      const { error } = await supabase.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "lead-notification",
-          recipientEmail: "lead.drukpolska@gmail.com",
-          idempotencyKey,
-          templateData: {
-            name: contactForm.name,
-            email: contactForm.email,
-            phone: contactForm.phone || "—",
-            message: contactForm.message || "—",
-            products: productSummary,
-            contactType: contactType === "handlowiec" ? "Kontakt z handlowcem" : "Video spotkanie",
-          },
-        },
+      const response = await fetch("https://formspree.io/f/xnjgklzn", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: contactForm.name,
+          email: contactForm.email,
+          phone: contactForm.phone || "—",
+          message: contactForm.message || "—",
+          products: productSummary,
+          contactType: contactType === "handlowiec" ? "Kontakt z handlowcem" : "Video spotkanie",
+        }),
       });
 
-      if (error) throw error;
+      if (!response.ok) throw new Error("Formspree error");
 
       toast.success(
         contactType === "handlowiec"
