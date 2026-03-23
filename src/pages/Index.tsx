@@ -318,7 +318,7 @@ const Index = () => {
     }));
   };
 
-  const handleContactSubmit = (e: React.FormEvent) => {
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactForm.name || !contactForm.email) {
       toast.error("Podaj imię i adres e-mail");
@@ -329,7 +329,6 @@ const Index = () => {
       return;
     }
 
-    // Build product summary for email
     const productSummary = selectedProducts
       .map((id) => {
         const product = products.find((p) => p.id === id);
@@ -344,18 +343,37 @@ const Index = () => {
       .filter(Boolean)
       .join("\n");
 
-    const subject = encodeURIComponent(`Nowe zgłoszenie PrintPartner — ${contactForm.name}`);
-    const body = encodeURIComponent(
-      `Imię i nazwisko: ${contactForm.name}\nE-mail: ${contactForm.email}\nTelefon: ${contactForm.phone || "—"}\n\nWybrane produkty:\n${productSummary}\n\nForma kontaktu: ${contactType === "handlowiec" ? "Kontakt z handlowcem" : "Video spotkanie"}\n\nWiadomość:\n${contactForm.message || "—"}`
-    );
+    const idempotencyKey = `lead-${Date.now()}-${contactForm.email}`;
 
-    window.open(`mailto:andrzej@drukpolska.pl?subject=${subject}&body=${body}`, "_blank");
+    try {
+      const { error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "lead-notification",
+          recipientEmail: "lead.drukpolska@gmail.com",
+          idempotencyKey,
+          templateData: {
+            name: contactForm.name,
+            email: contactForm.email,
+            phone: contactForm.phone || "—",
+            message: contactForm.message || "—",
+            products: productSummary,
+            contactType: contactType === "handlowiec" ? "Kontakt z handlowcem" : "Video spotkanie",
+          },
+        },
+      });
 
-    toast.success(
-      contactType === "handlowiec"
-        ? "Dziękujemy! Handlowiec skontaktuje się z Tobą wkrótce."
-        : "Dziękujemy! Link do spotkania video zostanie wysłany na Twój e-mail."
-    );
+      if (error) throw error;
+
+      toast.success(
+        contactType === "handlowiec"
+          ? "Dziękujemy! Handlowiec skontaktuje się z Tobą wkrótce."
+          : "Dziękujemy! Link do spotkania video zostanie wysłany na Twój e-mail."
+      );
+    } catch (err) {
+      console.error("Failed to send lead notification:", err);
+      toast.error("Nie udało się wysłać zgłoszenia. Spróbuj ponownie.");
+    }
+
     setContactOpen(false);
     setContactForm({ name: "", email: "", phone: "", message: "" });
   };
