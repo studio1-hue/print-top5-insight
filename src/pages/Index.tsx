@@ -25,7 +25,7 @@ import {
 
 import imgKalendarz from "@/assets/kalendarz.webp";
 import imgReflex from "@/assets/gra-reflex.webp";
-import imgMemory from "@/assets/memory.png";
+import imgMemory from "@/assets/memory.webp";
 import imgClipboard from "@/assets/clipboard.webp";
 import imgSegregator from "@/assets/segregator.webp";
 
@@ -175,15 +175,13 @@ function TiltCard({
 
         {/* Image */}
         <div className="relative z-[1] flex justify-center pt-2 pb-4">
-          <div className={`rounded-2xl bg-gradient-to-br ${product.color} p-3`}>
-            <motion.img
-              src={product.image}
-              alt={product.name}
-              className="h-32 w-32 md:h-36 md:w-36 object-contain drop-shadow-lg"
-              whileHover={{ scale: 1.1 }}
-              transition={{ type: "spring", stiffness: 400 }}
-            />
-          </div>
+          <motion.img
+            src={product.image}
+            alt={product.name}
+            className="h-32 w-32 md:h-36 md:w-36 object-contain drop-shadow-lg mix-blend-multiply"
+            whileHover={{ scale: 1.1 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          />
         </div>
 
         {/* Text */}
