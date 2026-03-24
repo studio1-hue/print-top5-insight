@@ -550,21 +550,6 @@ const Index = () => {
             >
               <Phone className="mr-2 h-4 w-4" /> Poproś o kontakt handlowca
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => {
-                if (selectedProducts.length === 0) {
-                  toast.error("Wybierz przynajmniej jeden produkt");
-                  return;
-                }
-                setContactType("video");
-                setContactOpen(true);
-              }}
-              className="w-full sm:w-auto"
-            >
-              <Video className="mr-2 h-4 w-4" /> Umów video spotkanie
-            </Button>
           </motion.div>
         </div>
       </section>
