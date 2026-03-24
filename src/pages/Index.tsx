@@ -697,22 +697,8 @@ const Index = () => {
                   <>
                     <Phone className="mr-2 h-4 w-4" /> Wyślij zgłoszenie
                   </>
-                ) : (
-                  <>
-                    <Video className="mr-2 h-4 w-4" /> Wyślij i umów spotkanie
-                  </>
                 )}
               </Button>
-              {contactType === "video" && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => window.open("https://calendly.com", "_blank")}
-                  className="flex-1"
-                >
-                  <Video className="mr-2 h-4 w-4" /> Otwórz Calendly
-                </Button>
-              )}
             </div>
           </form>
         </DialogContent>
