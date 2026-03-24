@@ -693,11 +693,7 @@ const Index = () => {
 
             <div className="flex flex-col gap-2 pt-2 sm:flex-row">
               <Button type="submit" className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
-                {contactType === "handlowiec" ? (
-                  <>
-                    <Phone className="mr-2 h-4 w-4" /> Wyślij zgłoszenie
-                  </>
-                )}
+                <Phone className="mr-2 h-4 w-4" /> Wyślij zgłoszenie
               </Button>
             </div>
           </form>
