@@ -550,21 +550,6 @@ const Index = () => {
             >
               <Phone className="mr-2 h-4 w-4" /> Poproś o kontakt handlowca
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => {
-                if (selectedProducts.length === 0) {
-                  toast.error("Wybierz przynajmniej jeden produkt");
-                  return;
-                }
-                setContactType("video");
-                setContactOpen(true);
-              }}
-              className="w-full sm:w-auto"
-            >
-              <Video className="mr-2 h-4 w-4" /> Umów video spotkanie
-            </Button>
           </motion.div>
         </div>
       </section>
@@ -708,26 +693,8 @@ const Index = () => {
 
             <div className="flex flex-col gap-2 pt-2 sm:flex-row">
               <Button type="submit" className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
-                {contactType === "handlowiec" ? (
-                  <>
-                    <Phone className="mr-2 h-4 w-4" /> Wyślij zgłoszenie
-                  </>
-                ) : (
-                  <>
-                    <Video className="mr-2 h-4 w-4" /> Wyślij i umów spotkanie
-                  </>
-                )}
+                <Phone className="mr-2 h-4 w-4" /> Wyślij zgłoszenie
               </Button>
-              {contactType === "video" && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => window.open("https://calendly.com", "_blank")}
-                  className="flex-1"
-                >
-                  <Video className="mr-2 h-4 w-4" /> Otwórz Calendly
-                </Button>
-              )}
             </div>
           </form>
         </DialogContent>
